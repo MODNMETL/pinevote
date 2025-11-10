@@ -1,0 +1,34 @@
+name: PineVote
+version: "${version}"
+main: com.modnmetl.pinevote.PineVotePlugin
+api-version: "1.21"
+author: MODN METL JT
+website: https://example.com
+commands:
+  pinevote:
+    description: PineVote main command
+    usage: "/pinevote <yes|no|status|reset>"
+    permission: pinevote.use
+permissions:
+  pinevote.*:
+    description: All PineVote permissions
+    default: op
+    children:
+      pinevote.use: true
+      pinevote.vote: true
+      pinevote.status: true
+      pinevote.admin.reset: true
+  pinevote.use:
+    description: Allow using /pinevote
+    default: true
+  pinevote.vote:
+    description: Allow casting a vote
+    default: true
+  pinevote.status:
+    description: Allow viewing status
+    default: true
+  pinevote.admin.reset:
+    description: Reset all votes and tallies
+    default: op
+softdepend:
+  - PlaceholderAPI
