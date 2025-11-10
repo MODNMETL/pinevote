@@ -1,0 +1,39 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'    # e.g. v1.1.0
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/wrapper-validation@v3
+      - run: chmod +x gradlew
+
+      - name: Derive version from tag (strip the 'v')
+        id: vars
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Build (release)
+        env:
+          VERSION: ${{ steps.vars.outputs.VERSION }}
+        run: ./gradlew clean build shadowJar --no-daemon
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: PineVote ${{ steps.vars.outputs.VERSION }}
+          generate_release_notes: true
+          files: build/libs/*.jar
